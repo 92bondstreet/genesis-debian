@@ -218,20 +218,32 @@ backdoors () {
 database () {
   header "Database installation"
 
-  aptitude -y install postgresql postgresql-client postgresql-contrib php5-pgsql sudo #postgis
+  aptitude -y install postgresql postgresql-client postgresql-contrib php5-pgsql sudo
   wget --no-check-certificate -O phppgadmin.tar.gz http://downloads.sourceforge.net/phppgadmin/phpPgAdmin-5.1.tar.gz?download
   mkdir -p /var/www/phppgadmin
   tar -xvf phppgadmin.tar.gz -C /var/www/phppgadmin --strip-components=1
+  sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+  sed -i '/^#/!s/peer/md5/' /etc/postgresql/9.4/main/pg_hba.conf
+  /etc/init.d/postgresql restart
   cecho "Give a name of the user allows to connect to phppgadmin: " $red
   read -r phppgadminuser
   sudo -u postgres -i createuser --superuser --pwprompt $phppgadminuser
   sed -i "s/\$conf\['servers'\]\[0\]\['host'\].*/\$conf\['servers'\]\[0\]\['host'\] = 'localhost';/" /var/www/phppgadmin/conf/config.inc.php
-  #su -u postgres createuser gisuser
-  #su -u postgres createdb --encoding=UTF8 --owner=gisuser gis
-  #psql --username=postgres --dbname=gis -c "CREATE EXTENSION postgis;"
-  #psql --username=postgres --dbname=gis -c "CREATE EXTENSION postgis_topology;"
 
   cecho "Database done" $green
+}
+
+# postgis
+postgis () {
+  header "Postgis installation"
+
+  aptitude -y install postgis
+  sudo -u postgres createuser gisuser
+  sudo -u postgres createdb --encoding=UTF8 --owner=gisuser gis
+  psql --username=postgres --dbname=gis -c "CREATE EXTENSION postgis;"
+  psql --username=postgres --dbname=gis -c "CREATE EXTENSION postgis_topology;"
+
+  cecho "Postgis done" $green
 }
 
 # Nginx

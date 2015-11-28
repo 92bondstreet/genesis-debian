@@ -31,6 +31,10 @@
 1. NGinx, PHP-FPM and MemCached
 1. ZSH installation and terminal
 
+## Installation available beyond steps
+
+1. postgis
+
 ## Deep diving
 
 * [Securing Debian Manual
