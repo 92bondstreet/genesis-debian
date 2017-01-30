@@ -31,6 +31,7 @@ if [ "$(id -u)" != "0" ]; then
   exit 1
 fi
 
+DATABASE=false
 PRODUCTION=false
 VAGRANT=true
 cd $HOME
@@ -45,9 +46,13 @@ do
         --production)
             PRODUCTION=true
             ;;
+        --database)
+            DATABASE=true
+            ;;
         *)
             VAGRANT=true
             PRODUCTION=false
+            DATABASE=false
             ;;
     esac
     shift
@@ -271,7 +276,7 @@ terminal () {
   aptitude -y install zsh
   chsh -s $(which zsh)
   curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
-  sed -i '/^#/!s/ZSH_THEME.*/ZSH_THEME="clean"/' ~/.zshrc
+  sed -i '/^#/!s/ZSH_THEME.*/ZSH_THEME="pure"/' ~/.zshrc
 
   cecho "Restart your terminal to set oh-my-zsh installation" $green
   cecho "ZSH installed" $green
@@ -293,6 +298,8 @@ fi
 
 fail2ban
 backdoors
-database
+if $DATABASE; then
+  database
+fi
 nginx
 terminal
