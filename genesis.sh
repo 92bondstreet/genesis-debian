@@ -34,6 +34,7 @@ fi
 DATABASE=false
 FIREWALL=false
 NGINX=false
+NODE=false
 SHIELD=false
 TERMINAL=false
 VAGRANT=false
@@ -53,6 +54,9 @@ do
         --nginx)
             NGINX=true
             ;;
+        --nginx)
+            NODE=true
+            ;;
         --shield)
             SHIELD=true
             ;;
@@ -66,6 +70,7 @@ do
             DATABASE=true
             FIREWALL=true
             NGINX=true
+            NODE=true
             SHIELD=true
             TERMINAL=true
             VAGRANT=true
@@ -146,7 +151,7 @@ first_protection () {
   # mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys
   # chmod 0700 ~/.ssh
   # chmod 0600 ~/.ssh/authorized_keys
-  # scp -R $sshport ~/.ssh/id_rsa.pub $newuser@xxx.xxx.x.xxx:/home/$newuser
+  # scp -P $sshport ~/.ssh/id_rsa.pub $newuser@xxx.xxx.x.xxx:/home/$newuser
   # cat /home/$newuser/id_rsa.pub >> ~/.ssh/authorized_keys
 
   ## SSH connection with vagrant
@@ -292,10 +297,22 @@ terminal () {
   aptitude -y install zsh
   chsh -s $(which zsh)
   curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
-  sed -i '/^#/!s/ZSH_THEME.*/ZSH_THEME="pure"/' ~/.zshrc
+  sed -i '/^#/!s/ZSH_THEME.*/ZSH_THEME="refined"/' ~/.zshrc
 
   cecho "Restart your terminal to set oh-my-zsh installation" $green
   cecho "ZSH installed" $green
+}
+
+node () {
+  header "NVM and yarn installation"
+
+  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+  apt-get update && aptitude install apt-transport-https && apt-get install yarn
+
+  cecho "Restart your terminal to run nmv install v8" $green
+  cecho "Node installed" $green
 }
 
 if $SHIELD; then
@@ -317,6 +334,10 @@ fi
 
 if $NGINX; then
   nginx
+fi
+
+if $NODE; then
+  node
 fi
 
 if $TERMINAL; then
