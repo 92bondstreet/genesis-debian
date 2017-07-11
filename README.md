@@ -7,7 +7,7 @@
 **Note:** Root only
 
 ```sh
-❯ wget --no-check-certificate https://raw.githubusercontent.com/92bondstreet/genesis/master/genesis.sh
+❯ wget --no-check-certificate https://raw.githubusercontent.com/92bondstreet/genesis-debian/master/genesis.sh
 ❯ chmod +x ./genesis.sh
 ❯ sh genesis.sh
 ```
@@ -15,7 +15,8 @@
 ## Production
 
 ```sh
-❯ sh genesis.sh --production
+❯ sh genesis.sh
+❯ sh genesis.sh --shield --terminal
 ```
 
 ## Steps

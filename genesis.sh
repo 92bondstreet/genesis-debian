@@ -32,27 +32,43 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 DATABASE=false
-PRODUCTION=false
-VAGRANT=true
+FIREWALL=false
+NGINX=false
+SHIELD=false
+TERMINAL=false
+VAGRANT=false
+
 cd $HOME
 PWD="$(pwd)"
 
 while [ $# -gt 0 ]
 do
     case "$1" in
-        --vagrant)
-            VAGRANT=true
-            ;;
-        --production)
-            PRODUCTION=true
-            ;;
         --database)
             DATABASE=true
             ;;
-        *)
+        --firewall)
+            FIREWALL=true
+            ;;
+        --nginx)
+            NGINX=true
+            ;;
+        --shield)
+            SHIELD=true
+            ;;
+        --terminal)
+            TERMINAL=true
+            ;;
+        --vagrant)
             VAGRANT=true
-            PRODUCTION=false
-            DATABASE=false
+            ;;
+        *)
+            DATABASE=true
+            FIREWALL=true
+            NGINX=true
+            SHIELD=true
+            TERMINAL=true
+            VAGRANT=true
             ;;
     esac
     shift
@@ -282,24 +298,29 @@ terminal () {
   cecho "ZSH installed" $green
 }
 
-# Kickstarter
-first_connection
-
-if $PRODUCTION; then
+if $SHIELD; then
+  first_connection
   first_protection
+  useless_packages
+  fail2ban
+  backdoors
 fi
 
-useless_packages
-
-if $PRODUCTION; then
+if $FIREWALL; then
   firewall
   portsentry
 fi
 
-fail2ban
-backdoors
 if $DATABASE; then
   database
 fi
-nginx
-terminal
+
+if $NGINX; then
+  nginx
+fi
+
+if $TERMINAL; then
+  terminal
+fi
+
+cecho "GENESIS \o/" $green
